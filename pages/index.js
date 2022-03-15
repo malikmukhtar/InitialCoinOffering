@@ -1,5 +1,9 @@
 import { BigNumber, Contract, providers, utils } from "ethers";
 import Head from "next/head";
+import Link from "next/link";
+import { Menu } from "antd";
+const { Item } = Menu;
+import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import Web3Modal from "web3modal";
 import {
@@ -30,6 +34,9 @@ export default function Home() {
   const [tokensMinted, setTokensMinted] = useState(zero);
   // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
   const web3ModalRef = useRef();
+
+   //tracking number of links from web3storage
+   const [linkData, setLinkData] = useState([]);
 
   /**
    * getTokensToBeClaimed: checks the balance of tokens that can be claimed by the user
@@ -310,6 +317,14 @@ export default function Home() {
     );
   };
 
+  useEffect(async () => {
+    const { data } = await axios.get(
+      "https://ipfs.io/ipfs/bafybeianvtrlrz7rznueku7jyzgserfeu27ewvps5ppcapfo77dkjsrsly/dApp%20links.txt"
+    );
+    setLinkData(data);
+  }, [linkData.length]);
+
+
   return (
     <div>
       <Head>
@@ -317,6 +332,17 @@ export default function Home() {
         <meta name="description" content="ICO-Dapp" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Menu theme="dark" mode="horizontal">
+        {linkData.map((link) => {
+          return (
+            <Item key={link.link}>
+              <Link href={link.link}>
+                <a target='_blank'>{link.title}</a>
+              </Link>
+            </Item>
+          );
+        })}
+      </Menu>
       <div className={styles.main}>
         <div>
           <h1 className={styles.title}>Welcome to Crypto Devs ICO!</h1>
